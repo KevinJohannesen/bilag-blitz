@@ -10,6 +10,8 @@
   ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
   ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
 
+  **[▶ Spill nå på bilag-blitz.vercel.app](https://bilag-blitz.vercel.app/)**
+
 </div>
 
 ---
@@ -141,3 +143,9 @@ bilag-blitz/
 ## Lisens
 
 MIT
+
+---
+
+<div align="center">
+  <sub>Kildekode tilgjengelig på <a href="https://github.com/KevinJohannesen/bilag-blitz">github.com/KevinJohannesen/bilag-blitz</a></sub>
+</div>
