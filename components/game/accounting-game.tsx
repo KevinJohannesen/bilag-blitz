@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { FallingReceipt } from "./falling-receipt"
-import { AccountPanel } from "./account-panel"
+import { AccountPanel, SubmitResult } from "./account-panel"
 import { GameStats } from "./game-stats"
 import { 
   generateTransaction, 
   Transaction, 
   DIFFICULTY_LEVELS, 
   DifficultySettings,
-  ACCOUNTS 
+  ACCOUNTS,
+  GameMode,
 } from "@/lib/accounting-data"
 
 interface FallingTransaction extends Transaction {
@@ -27,6 +28,7 @@ const RECEIPT_HEIGHT = 180
 export function AccountingGame() {
   // Game state
   const [gameState, setGameState] = useState<GameState>('menu')
+  const [gameMode, setGameMode] = useState<GameMode>('enkeltsidet')
   const [difficulty, setDifficulty] = useState<string>('medium')
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(0)
@@ -38,8 +40,9 @@ export function AccountingGame() {
   
   // Transactions
   const [fallingTransactions, setFallingTransactions] = useState<FallingTransaction[]>([])
-  const [inputValue, setInputValue] = useState('')
-  const [lastResult, setLastResult] = useState<{ correct: boolean; account: string; expected: string } | null>(null)
+  const [debitValue, setDebitValue] = useState('')
+  const [creditValue, setCreditValue] = useState('')
+  const [lastResult, setLastResult] = useState<SubmitResult | null>(null)
   
   // Refs for game loop
   const gameLoopRef = useRef<number | null>(null)
@@ -58,21 +61,20 @@ export function AccountingGame() {
     }
   }, [difficulty, level])
   
-  // Load high score from localStorage
+  // Load high score from localStorage (per mode)
   useEffect(() => {
-    const saved = localStorage.getItem('bilag-blitz-highscore')
-    if (saved) {
-      setHighScore(parseInt(saved, 10))
-    }
-  }, [])
-  
+    const key = `bilag-blitz-highscore-${gameMode}`
+    const saved = localStorage.getItem(key)
+    setHighScore(saved ? parseInt(saved, 10) : 0)
+  }, [gameMode])
+
   // Save high score
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score)
-      localStorage.setItem('bilag-blitz-highscore', score.toString())
+      localStorage.setItem(`bilag-blitz-highscore-${gameMode}`, score.toString())
     }
-  }, [score, highScore])
+  }, [score, highScore, gameMode])
   
   // Level up based on score
   useEffect(() => {
@@ -199,39 +201,39 @@ export function AccountingGame() {
   
   // Handle answer submission
   const handleSubmit = useCallback(() => {
-    if (!inputValue || gameState !== 'playing') return
-    
+    if (!debitValue || gameState !== 'playing') return
+    if (gameMode === 'dobbeltsidet' && !creditValue) return
+
     const settings = getSettings()
-    
-    // Find the lowest (closest to bottom) unanswered transaction
+
     const activeTransactions = fallingTransactions
       .filter(tx => tx.isCorrect === null)
       .sort((a, b) => b.positionY - a.positionY)
-    
+
     if (activeTransactions.length === 0) return
-    
+
     const target = activeTransactions[0]
-    const isCorrect = inputValue === target.correctAccount
-    
-    setFallingTransactions(prev => 
-      prev.map(tx => 
+    const debitCorrect = debitValue === target.correctDebitAccount
+    const creditCorrect = gameMode === 'enkeltsidet' || creditValue === target.correctCreditAccount
+    const isCorrect = debitCorrect && creditCorrect
+
+    setFallingTransactions(prev =>
+      prev.map(tx =>
         tx.id === target.id ? { ...tx, isCorrect } : tx
       )
     )
-    
+
     if (isCorrect) {
-      // Calculate bonus for speed
       const responseTime = (Date.now() - target.spawnTime) / 1000
-      const timeBonus = responseTime < settings.bonusTimeThreshold 
+      const timeBonus = responseTime < settings.bonusTimeThreshold
         ? Math.floor((settings.bonusTimeThreshold - responseTime) * 20)
         : 0
       const streakBonus = streak * 10
       const totalPoints = settings.pointsPerCorrect + timeBonus + streakBonus
-      
+
       setScore(s => s + totalPoints)
       setStreak(s => s + 1)
     } else {
-      // Wrong answer - lose a life!
       setStreak(0)
       setLives(l => {
         const newLives = l - 1
@@ -241,18 +243,20 @@ export function AccountingGame() {
         return Math.max(0, newLives)
       })
     }
-    
+
     setLastResult({
       correct: isCorrect,
-      account: inputValue,
-      expected: target.correctAccount,
+      debitInput: debitValue,
+      creditInput: creditValue,
+      expectedDebit: target.correctDebitAccount,
+      expectedCredit: target.correctCreditAccount,
     })
-    
-    setInputValue('')
-    
-    // Clear result after 2 seconds
+
+    setDebitValue('')
+    setCreditValue('')
+
     setTimeout(() => setLastResult(null), 2000)
-  }, [inputValue, fallingTransactions, gameState, streak, getSettings])
+  }, [debitValue, creditValue, fallingTransactions, gameState, gameMode, streak, getSettings])
   
   // Start game
   const startGame = () => {
@@ -264,7 +268,8 @@ export function AccountingGame() {
     setTimeElapsed(0)
     setFallingTransactions([])
     setLastResult(null)
-    setInputValue('')
+    setDebitValue('')
+    setCreditValue('')
     // Reset timing refs for clean start
     isFirstFrameRef.current = true
     spawnTimerRef.current = DIFFICULTY_LEVELS[difficulty].spawnInterval - 500 // Spawn after brief delay
@@ -296,18 +301,51 @@ export function AccountingGame() {
               <div className="text-6xl mb-4">📊</div>
               <h2 className="text-2xl font-bold text-stone-800 mb-2">Velkommen til Bilag Blitz!</h2>
               <p className="text-stone-600 max-w-md mx-auto">
-                Bilag faller ned fra himmelen. Tast inn riktig kontokode fra Norsk Standard Kontoplan 
-                for de treffer bunnen. Jo raskere du svarer, jo flere poeng far du!
+                {gameMode === 'enkeltsidet'
+                  ? 'Bilag faller ned fra himmelen. Tast inn riktig debetkonto fra Norsk Standard Kontoplan før de treffer bunnen. Jo raskere du svarer, jo flere poeng får du!'
+                  : 'Bilag faller ned fra himmelen. Tast inn riktig debet- og kreditkonto fra Norsk Standard Kontoplan før de treffer bunnen. Jo raskere du bokfører, jo flere poeng får du!'}
               </p>
               <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 max-w-sm mx-auto">
                 <p className="text-sm text-red-700 font-medium">
                   Du mister et liv hvis:
                 </p>
                 <ul className="text-sm text-red-600 mt-1">
-                  <li>- Et bilag faller forbi den rode linjen</li>
-                  <li>- Du taster feil kontokode</li>
+                  <li>- Et bilag faller forbi den røde linjen</li>
+                  <li>- Du taster feil {gameMode === 'enkeltsidet' ? 'kontokode' : 'debet- eller kreditkonto'}</li>
                 </ul>
               </div>
+            </div>
+
+            {/* Game mode selector */}
+            <div className="mb-6">
+              <p className="text-sm text-stone-500 mb-2">Velg posteringsmodus:</p>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => setGameMode('enkeltsidet')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    gameMode === 'enkeltsidet'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  Enkeltsidet
+                </button>
+                <button
+                  onClick={() => setGameMode('dobbeltsidet')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    gameMode === 'dobbeltsidet'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  Dobbeltsidet
+                </button>
+              </div>
+              <p className="text-xs text-stone-400 mt-2">
+                {gameMode === 'enkeltsidet'
+                  ? 'Kun debetkonto — tast inn hvilken konto som belastes'
+                  : 'Debet + kredit — tast inn begge sider av posteringen'}
+              </p>
             </div>
             
             <div className="mb-6">
@@ -421,6 +459,7 @@ export function AccountingGame() {
                   positionX={tx.positionX}
                   isCorrect={tx.isCorrect}
                   isActive={tx.id === activeTransactionId}
+                  gameMode={gameMode}
                 />
               ))}
               
@@ -437,8 +476,11 @@ export function AccountingGame() {
             
             {/* Input panel */}
             <AccountPanel
-              inputValue={inputValue}
-              onInputChange={setInputValue}
+              gameMode={gameMode}
+              debitValue={debitValue}
+              creditValue={creditValue}
+              onDebitChange={setDebitValue}
+              onCreditChange={setCreditValue}
               onSubmit={handleSubmit}
               lastResult={lastResult}
               showHints={showHints}
