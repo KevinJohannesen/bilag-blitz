@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bilag Blitz - Regnskapsmann-simulator",
+  title: "Bilag Blitz",
   description: "Et norsk regnskapsspill - bokfør bilag før de faller ned!",
 };
 

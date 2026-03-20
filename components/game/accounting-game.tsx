@@ -60,7 +60,7 @@ export function AccountingGame() {
   
   // Load high score from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('regnskapsmann-highscore')
+    const saved = localStorage.getItem('bilag-blitz-highscore')
     if (saved) {
       setHighScore(parseInt(saved, 10))
     }
@@ -70,7 +70,7 @@ export function AccountingGame() {
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score)
-      localStorage.setItem('regnskapsmann-highscore', score.toString())
+      localStorage.setItem('bilag-blitz-highscore', score.toString())
     }
   }, [score, highScore])
   
@@ -285,7 +285,7 @@ export function AccountingGame() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="text-center mb-4">
-          <h1 className="text-3xl font-bold text-stone-800">Regnskapsmann-simulator</h1>
+          <h1 className="text-3xl font-bold text-stone-800">Bilag Blitz</h1>
           <p className="text-stone-500">Bokfør bilagene før de faller ned!</p>
         </header>
         
@@ -294,7 +294,7 @@ export function AccountingGame() {
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <div className="mb-8">
               <div className="text-6xl mb-4">📊</div>
-              <h2 className="text-2xl font-bold text-stone-800 mb-2">Velkommen, Regnskapsmann!</h2>
+              <h2 className="text-2xl font-bold text-stone-800 mb-2">Velkommen til Bilag Blitz!</h2>
               <p className="text-stone-600 max-w-md mx-auto">
                 Bilag faller ned fra himmelen. Tast inn riktig kontokode fra Norsk Standard Kontoplan 
                 for de treffer bunnen. Jo raskere du svarer, jo flere poeng far du!
