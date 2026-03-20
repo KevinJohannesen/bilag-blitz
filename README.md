@@ -9,6 +9,7 @@
   ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
   ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
   ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
+  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
   **[▶ Spill nå på bilag-blitz.vercel.app](https://bilag-blitz.vercel.app/)**
 
