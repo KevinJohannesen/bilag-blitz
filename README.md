@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="app/icon.png" alt="Bilag Blitz" width="120" />
 
-## Getting Started
+  # Bilag Blitz
 
-First, run the development server:
+  **Et norsk regnskapsspill der bilag faller ned og du bokfører dem i sanntid.**
+
+  ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js)
+  ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
+
+</div>
+
+---
+
+## Hva er Bilag Blitz?
+
+Bilag Blitz er et nettleserbasert arkadespill der du spiller som bokfører under press. Bilag — kvitteringer og fakturaer fra norske bedrifter — faller ned fra toppen av skjermen. Oppgaven din er å taste inn riktig kontokode fra **Norsk Standard Kontoplan (NS 4102)** før bilaget treffer bunnen.
+
+Jo raskere du svarer, jo flere poeng får du. Feil svar eller bilag som faller forbi den røde linjen koster deg et liv. Klarer du å holde hodet kaldt og bokføre riktig under press?
+
+---
+
+## Spillregler
+
+| Hendelse | Konsekvens |
+|---|---|
+| Riktig kontokode | Poeng + tidsbonus + streakbonus |
+| Feil kontokode | −1 liv, streak nullstilles |
+| Bilag faller forbi rød linje | −1 liv, streak nullstilles |
+| Alle liv tapt | Spill over |
+
+**Streakbonus** — jo lengre rekke av riktige svar, jo høyere bonuspoeng per bokføring.
+
+**Tidsbonus** — raske svar gir ekstra poeng. Grensen varierer med vanskelighetsgrad.
+
+**Nivåsystem** — for hvert 1 000 poeng stiger du et nivå. Høyere nivå = raskere fallhastighet og kortere intervall mellom nye bilag.
+
+---
+
+## Vanskelighetsgrader
+
+| Grad | Fallhastighet | Mellomrom | Liv | Poeng/riktig | Tidsbonus-grense |
+|---|---|---|---|---|---|
+| Lett | 0.5 px/frame | 5 sek | 5 | 100 | 8 sek |
+| Medium | 0.8 px/frame | 3.5 sek | 4 | 150 | 6 sek |
+| Vanskelig | 1.2 px/frame | 2.5 sek | 3 | 200 | 4 sek |
+| Ekspert | 1.6 px/frame | 2 sek | 2 | 300 | 3 sek |
+
+---
+
+## Kontoplan
+
+Spillet er basert på **NS 4102 — Norsk Standard Kontoplan**. Du vil møte kontoer fra alle hovedklassene:
+
+| Klasse | Kategori | Eksempler |
+|---|---|---|
+| 1xxx | Eiendeler | 1200 Maskiner, 1500 Kundefordringer, 1920 Bankinnskudd |
+| 2xxx | Gjeld & egenkapital | 2400 Leverandørgjeld, 2710 Utgående MVA |
+| 3xxx | Inntekter | 3000 Salgsinntekter, 3100 Tjenestesalg |
+| 4xxx | Varekostnad | 4000 Varekostnad, 4300 Innkjøp varer |
+| 5xxx | Lønnskostnader | 5000 Lønn, 5400 Arbeidsgiveravgift |
+| 6–7xxx | Drifts- og andre kostnader | 6300 Leiekostnader, 7350 Reisekostnader |
+
+Et innebygd **kontooversiktspanel** kan aktiveres for nybegynnere.
+
+---
+
+## Teknisk stack
+
+- **[Next.js 16](https://nextjs.org/)** — App Router, React Server Components
+- **[React 19](https://react.dev/)** — spillogikk med hooks og `requestAnimationFrame`-gameloop
+- **[TypeScript 5](https://www.typescriptlang.org/)** — full typesikkerhet
+- **[Tailwind CSS v4](https://tailwindcss.com/)** — utility-first styling
+- **[Shadcn UI](https://ui.shadcn.com/)** — komponentbibliotek (new-york stil)
+- **[Radix UI](https://www.radix-ui.com/)** — tilgjengelige UI-primitiver
+- **[Lucide React](https://lucide.dev/)** — ikoner
+
+---
+
+## Kom i gang
+
+### Forutsetninger
+
+- Node.js 20+
+- pnpm
+
+### Installasjon
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/ditt-brukernavn/bilag-blitz.git
+cd bilag-blitz
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Kjør lokalt
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Åpne [http://localhost:3000](http://localhost:3000) i nettleseren.
 
-## Learn More
+### Bygg for produksjon
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm build
+pnpm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Prosjektstruktur
 
-## Deploy on Vercel
+```
+bilag-blitz/
+├── app/
+│   ├── icon.png              # App-ikon og favicon
+│   ├── layout.tsx            # Root layout med metadata
+│   ├── page.tsx              # Hjemmeside
+│   └── globals.css           # Globale stiler og CSS-variabler
+├── components/
+│   ├── game/
+│   │   ├── accounting-game.tsx   # Hoved-spillkomponent og gameloop
+│   │   ├── falling-receipt.tsx   # Animert bilag-komponent
+│   │   ├── account-panel.tsx     # Inndatafelt og kontooversikt
+│   │   └── game-stats.tsx        # Poeng, liv, streak og tid
+│   ├── ui/                       # Shadcn UI-komponenter
+│   └── theme-provider.tsx        # Dark mode-støtte
+├── hooks/
+│   ├── use-mobile.ts         # Responsiv breakpoint-hook
+│   └── use-toast.ts          # Toast-notifikasjoner
+└── lib/
+    ├── accounting-data.ts    # NS 4102-kontoplan og transaksjonsdata
+    └── utils.ts              # Tailwind cn()-hjelper
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Lisens
+
+MIT
