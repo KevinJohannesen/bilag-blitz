@@ -1,16 +1,16 @@
 <div align="center">
   <img src="app/icon.png" alt="Bilag Blitz" width="120" />
 
-  # Bilag Blitz
+# Bilag Blitz
 
-  **Et norsk regnskapsspill der bilag faller ned og du bokfører dem i sanntid.**
+**Et norsk regnskapsspill der bilag faller ned og du bokfører dem i sanntid.**
 
-  ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js)
-  ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
-  ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
+![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
 
-  **[▶ Spill nå på bilag-blitz.vercel.app](https://bilag-blitz.vercel.app/)**
+**[▶ Spill nå på bilag-blitz.vercel.app](https://bilag-blitz.vercel.app/)**
 
 </div>
 
@@ -26,12 +26,12 @@ Jo raskere du svarer, jo flere poeng får du. Feil svar eller bilag som faller f
 
 ## Spillregler
 
-| Hendelse | Konsekvens |
-|---|---|
-| Riktig kontokode | Poeng + tidsbonus + streakbonus |
-| Feil kontokode | −1 liv, streak nullstilles |
-| Bilag faller forbi rød linje | −1 liv, streak nullstilles |
-| Alle liv tapt | Spill over |
+| Hendelse                     | Konsekvens                      |
+| ---------------------------- | ------------------------------- |
+| Riktig kontokode             | Poeng + tidsbonus + streakbonus |
+| Feil kontokode               | −1 liv, streak nullstilles      |
+| Bilag faller forbi rød linje | −1 liv, streak nullstilles      |
+| Alle liv tapt                | Spill over                      |
 
 **Streakbonus** — jo lengre rekke av riktige svar, jo høyere bonuspoeng per bokføring.
 
@@ -43,12 +43,12 @@ Jo raskere du svarer, jo flere poeng får du. Feil svar eller bilag som faller f
 
 ## Vanskelighetsgrader
 
-| Grad | Fallhastighet | Mellomrom | Liv | Poeng/riktig | Tidsbonus-grense |
-|---|---|---|---|---|---|
-| Lett | 0.5 px/frame | 5 sek | 5 | 100 | 8 sek |
-| Medium | 0.8 px/frame | 3.5 sek | 4 | 150 | 6 sek |
-| Vanskelig | 1.2 px/frame | 2.5 sek | 3 | 200 | 4 sek |
-| Ekspert | 1.6 px/frame | 2 sek | 2 | 300 | 3 sek |
+| Grad      | Fallhastighet | Mellomrom | Liv | Poeng/riktig | Tidsbonus-grense |
+| --------- | ------------- | --------- | --- | ------------ | ---------------- |
+| Lett      | 0.5 px/frame  | 5 sek     | 5   | 100          | 8 sek            |
+| Medium    | 0.8 px/frame  | 3.5 sek   | 4   | 150          | 6 sek            |
+| Vanskelig | 1.2 px/frame  | 2.5 sek   | 3   | 200          | 4 sek            |
+| Ekspert   | 1.6 px/frame  | 2 sek     | 2   | 300          | 3 sek            |
 
 ---
 
@@ -56,14 +56,14 @@ Jo raskere du svarer, jo flere poeng får du. Feil svar eller bilag som faller f
 
 Spillet er basert på **NS 4102 — Norsk Standard Kontoplan**. Du vil møte kontoer fra alle hovedklassene:
 
-| Klasse | Kategori | Eksempler |
-|---|---|---|
-| 1xxx | Eiendeler | 1200 Maskiner, 1500 Kundefordringer, 1920 Bankinnskudd |
-| 2xxx | Gjeld & egenkapital | 2400 Leverandørgjeld, 2710 Utgående MVA |
-| 3xxx | Inntekter | 3000 Salgsinntekter, 3100 Tjenestesalg |
-| 4xxx | Varekostnad | 4000 Varekostnad, 4300 Innkjøp varer |
-| 5xxx | Lønnskostnader | 5000 Lønn, 5400 Arbeidsgiveravgift |
-| 6–7xxx | Drifts- og andre kostnader | 6300 Leiekostnader, 7350 Reisekostnader |
+| Klasse | Kategori                   | Eksempler                                              |
+| ------ | -------------------------- | ------------------------------------------------------ |
+| 1xxx   | Eiendeler                  | 1200 Maskiner, 1500 Kundefordringer, 1920 Bankinnskudd |
+| 2xxx   | Gjeld & egenkapital        | 2400 Leverandørgjeld, 2710 Utgående MVA                |
+| 3xxx   | Inntekter                  | 3000 Salgsinntekter, 3100 Tjenestesalg                 |
+| 4xxx   | Varekostnad                | 4000 Varekostnad, 4300 Innkjøp varer                   |
+| 5xxx   | Lønnskostnader             | 5000 Lønn, 5400 Arbeidsgiveravgift                     |
+| 6–7xxx | Drifts- og andre kostnader | 6300 Leiekostnader, 7350 Reisekostnader                |
 
 Et innebygd **kontooversiktspanel** kan aktiveres for nybegynnere.
 
@@ -142,7 +142,7 @@ bilag-blitz/
 
 ## Lisens
 
-MIT
+[MIT](LICENSE)
 
 ---
 
