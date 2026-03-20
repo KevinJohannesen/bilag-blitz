@@ -1,6 +1,6 @@
 "use client"
 
-import { Transaction } from "@/lib/accounting-data"
+import { Transaction, GameMode } from "@/lib/accounting-data"
 
 interface FallingReceiptProps {
   transaction: Transaction
@@ -8,6 +8,7 @@ interface FallingReceiptProps {
   positionX: number
   isCorrect: boolean | null
   isActive: boolean
+  gameMode: GameMode
 }
 
 export function FallingReceipt({ 
@@ -15,7 +16,8 @@ export function FallingReceipt({
   positionY, 
   positionX, 
   isCorrect,
-  isActive 
+  isActive,
+  gameMode,
 }: FallingReceiptProps) {
   const getReceiptStyle = () => {
     if (isCorrect === true) return "ring-2 ring-emerald-500 bg-emerald-50"
@@ -64,11 +66,16 @@ export function FallingReceipt({
               </span>
             </div>
           </div>
-          
-          {/* Account hint */}
+
+          {/* Footer hint */}
           <div className="mt-3 pt-2 border-t border-dashed border-stone-300">
-            <p className="text-xs text-center text-stone-400">
-              Tast inn kontokode
+            {gameMode === 'dobbeltsidet' && (
+              <p className="text-xs text-stone-500">
+                Kredit: <span className="font-medium text-stone-600">{transaction.creditAccountName}</span>
+              </p>
+            )}
+            <p className="text-[10px] text-center text-stone-400 mt-1">
+              {gameMode === 'enkeltsidet' ? 'Tast inn kontokode' : 'Tast inn debet- og kreditkonto'}
             </p>
           </div>
         </div>

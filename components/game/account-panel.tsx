@@ -1,29 +1,55 @@
 "use client"
 
-import { ACCOUNTS } from "@/lib/accounting-data"
+import { useRef } from "react"
+import { ACCOUNTS, GameMode } from "@/lib/accounting-data"
+
+export interface SubmitResult {
+  correct: boolean
+  debitInput: string
+  creditInput: string
+  expectedDebit: string
+  expectedCredit: string
+}
 
 interface AccountPanelProps {
-  inputValue: string
-  onInputChange: (value: string) => void
+  gameMode: GameMode
+  debitValue: string
+  creditValue: string
+  onDebitChange: (value: string) => void
+  onCreditChange: (value: string) => void
   onSubmit: () => void
-  lastResult: { correct: boolean; account: string; expected: string } | null
+  lastResult: SubmitResult | null
   showHints: boolean
 }
 
-export function AccountPanel({ 
-  inputValue, 
-  onInputChange, 
-  onSubmit, 
+export function AccountPanel({
+  gameMode,
+  debitValue,
+  creditValue,
+  onDebitChange,
+  onCreditChange,
+  onSubmit,
   lastResult,
-  showHints 
+  showHints
 }: AccountPanelProps) {
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const creditRef = useRef<HTMLInputElement>(null)
+  const isDouble = gameMode === 'dobbeltsidet'
+
+  const handleDebitKeyDown = (e: React.KeyboardEvent) => {
+    if (isDouble && (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey))) {
+      e.preventDefault()
+      creditRef.current?.focus()
+    } else if (!isDouble && e.key === 'Enter') {
+      onSubmit()
+    }
+  }
+
+  const handleCreditKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onSubmit()
     }
   }
 
-  // Group accounts by category
   const accountsByCategory = ACCOUNTS.reduce((acc, account) => {
     if (!acc[account.category]) {
       acc[account.category] = []
@@ -32,47 +58,95 @@ export function AccountPanel({
     return acc
   }, {} as Record<string, typeof ACCOUNTS>)
 
+  const debitCorrect = lastResult && lastResult.debitInput === lastResult.expectedDebit
+  const creditCorrect = lastResult && lastResult.creditInput === lastResult.expectedCredit
+
   return (
     <div className="bg-stone-900 text-stone-100 p-4 rounded-lg">
       {/* Input area */}
       <div className="mb-4">
-        <label className="block text-sm text-stone-400 mb-2">
-          Skriv inn kontokode:
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => onInputChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
-            onKeyDown={handleKeyDown}
-            placeholder="f.eks. 1920"
-            className="flex-1 px-4 py-3 text-2xl font-mono bg-stone-800 border border-stone-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-center tracking-widest"
-            autoFocus
-          />
-          <button
-            onClick={onSubmit}
-            className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-stone-900 font-bold rounded-lg transition-colors"
-          >
-            Bokfør
-          </button>
+        <div className="flex gap-3">
+          {/* Debit input */}
+          <div className="flex-1">
+            <label className="block text-xs text-stone-400 mb-1">
+              {isDouble ? 'Debet (til)' : 'Kontokode'}
+            </label>
+            <input
+              type="text"
+              value={debitValue}
+              onChange={(e) => onDebitChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              onKeyDown={handleDebitKeyDown}
+              placeholder={isDouble ? 'f.eks. 6300' : 'f.eks. 1920'}
+              className="w-full px-4 py-3 text-2xl font-mono bg-stone-800 border border-stone-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-center tracking-widest"
+              autoFocus
+            />
+          </div>
+          {/* Credit input (double-entry only) */}
+          {isDouble && (
+            <div className="flex-1">
+              <label className="block text-xs text-stone-400 mb-1">
+                Kredit (fra)
+              </label>
+              <input
+                ref={creditRef}
+                type="text"
+                value={creditValue}
+                onChange={(e) => onCreditChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                onKeyDown={handleCreditKeyDown}
+                placeholder="f.eks. 1920"
+                className="w-full px-4 py-3 text-2xl font-mono bg-stone-800 border border-stone-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center tracking-widest"
+              />
+            </div>
+          )}
+          <div className="flex items-end">
+            <button
+              onClick={onSubmit}
+              className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-stone-900 font-bold rounded-lg transition-colors"
+            >
+              Bokfør
+            </button>
+          </div>
         </div>
-        
+
         {/* Last result feedback */}
         {lastResult && (
           <div className={`mt-2 p-3 rounded-lg text-sm font-medium ${
-            lastResult.correct 
-              ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-700' 
+            lastResult.correct
+              ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-700'
               : 'bg-red-900/50 text-red-300 border border-red-700 animate-pulse'
           }`}>
             {lastResult.correct ? (
-              <span>Riktig! Konto {lastResult.account}</span>
+              <span>
+                {isDouble
+                  ? `Riktig! Debet ${lastResult.debitInput} / Kredit ${lastResult.creditInput}`
+                  : `Riktig! Konto ${lastResult.debitInput}`}
+              </span>
             ) : (
               <div>
-                <span className="block text-red-200 font-bold">-1 Liv! Feil kontokode!</span>
-                <span className="block mt-1">
-                  Du skrev: <span className="font-mono">{lastResult.account}</span> | 
-                  Riktig: <span className="font-mono text-amber-300">{lastResult.expected}</span> ({ACCOUNTS.find(a => a.code === lastResult.expected)?.name})
+                <span className="block text-red-200 font-bold">
+                  -1 Liv! Feil {isDouble ? 'bokføring' : 'kontokode'}!
                 </span>
+                {isDouble ? (
+                  <div className="flex gap-4 mt-1">
+                    <span>
+                      Debet: <span className={`font-mono ${debitCorrect ? 'text-emerald-300' : 'text-red-300'}`}>{lastResult.debitInput || '–'}</span>
+                      {!debitCorrect && (
+                        <> → <span className="font-mono text-amber-300">{lastResult.expectedDebit}</span> ({ACCOUNTS.find(a => a.code === lastResult.expectedDebit)?.name})</>
+                      )}
+                    </span>
+                    <span>
+                      Kredit: <span className={`font-mono ${creditCorrect ? 'text-emerald-300' : 'text-red-300'}`}>{lastResult.creditInput || '–'}</span>
+                      {!creditCorrect && (
+                        <> → <span className="font-mono text-amber-300">{lastResult.expectedCredit}</span> ({ACCOUNTS.find(a => a.code === lastResult.expectedCredit)?.name})</>
+                      )}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="block mt-1">
+                    Du skrev: <span className="font-mono">{lastResult.debitInput}</span> |
+                    Riktig: <span className="font-mono text-amber-300">{lastResult.expectedDebit}</span> ({ACCOUNTS.find(a => a.code === lastResult.expectedDebit)?.name})
+                  </span>
+                )}
               </div>
             )}
           </div>
