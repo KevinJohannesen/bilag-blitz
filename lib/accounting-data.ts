@@ -1,3 +1,5 @@
+import { generateId } from "sigilid"
+
 // Norwegian Standard Kontoplan (NS 4102) - Common accounts
 export interface Account {
   code: string
@@ -123,7 +125,7 @@ export function generateTransaction(): Transaction {
   date.setDate(date.getDate() - Math.floor(Math.random() * 30))
   
   return {
-    id: Math.random().toString(36).substr(2, 9),
+    id: generateId(9),
     description: template.description,
     amount,
     correctAccount: template.correctAccount,
